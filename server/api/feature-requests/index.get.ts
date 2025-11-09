@@ -1,4 +1,6 @@
+import process from "node:process"
 import { FeatureRequestTable } from "#/database/feature-requests"
+import { getUserFromToken } from "#/utils/jwt"
 
 /**
  * GET /api/feature-requests
@@ -9,6 +11,9 @@ import { FeatureRequestTable } from "#/database/feature-requests"
  * - sort: votes | created (默认: votes)
  * - limit: number (默认: 50)
  * - offset: number (默认: 0)
+ *
+ * Headers (可选):
+ * - Authorization: Bearer <session-token>
  */
 export default defineEventHandler(async (event) => {
   try {
@@ -18,8 +23,10 @@ export default defineEventHandler(async (event) => {
     const limit = Number.parseInt(query.limit as string) || 50
     const offset = Number.parseInt(query.offset as string) || 0
 
-    // TODO: 从 JWT token 获取 userId（如果已登录）
-    const userId = undefined
+    // 从 JWT token 获取 userId（如果已登录）
+    const jwtSecret = process.env.JWT_SECRET || "dev-secret-key-change-in-production"
+    const currentUser = await getUserFromToken(event, jwtSecret)
+    const userId = currentUser?.userId
 
     // 获取数据库实例
     const db = useDatabase()
