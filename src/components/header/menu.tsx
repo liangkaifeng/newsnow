@@ -1,4 +1,6 @@
 import { motion } from "framer-motion"
+import { type LayoutPresetID, layoutPresets } from "@shared/layouts"
+import { focusSourcesAtom } from "~/atoms"
 
 // function ThemeToggle() {
 //   const { isDark, toggleDark } = useDark()
@@ -11,6 +13,55 @@ import { motion } from "framer-motion"
 //     </li>
 //   )
 // }
+
+function LayoutToggle() {
+  const setFocusSources = useSetAtom(focusSourcesAtom)
+  const [showSubmenu, setShowSubmenu] = useState(false)
+
+  const applyLayout = (layoutId: LayoutPresetID) => {
+    const layout = layoutPresets[layoutId]
+    setFocusSources(layout.sources)
+    setShowSubmenu(false)
+  }
+
+  return (
+    <li
+      className="relative cursor-pointer [&_*]:cursor-pointer transition-all"
+      onMouseEnter={() => setShowSubmenu(true)}
+      onMouseLeave={() => setShowSubmenu(false)}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="i-ph:layout-duotone inline-block" />
+          <span>切换布局</span>
+        </div>
+        <span className="i-ph:caret-right inline-block text-xs op-50" />
+      </div>
+      {showSubmenu && (
+        <motion.div
+          className="absolute left-full top-0 ml-2 min-w-180px bg-base bg-op-90! backdrop-blur-md rounded-lg shadow-xl z-100"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+        >
+          <ol className="p-2 text-sm">
+            {Object.values(layoutPresets).map(layout => (
+              <li
+                key={layout.id}
+                onClick={() => applyLayout(layout.id as LayoutPresetID)}
+                className="hover:bg-primary/10 rounded-md transition-all"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium">{layout.name}</span>
+                  <span className="text-xs op-60">{layout.description}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </motion.div>
+      )}
+    </li>
+  )
+}
 
 export function Menu() {
   const { loggedIn, login, logout, userInfo, enableLogin } = useLogin()
@@ -51,6 +102,7 @@ export function Menu() {
             }}
           >
             <ol className="bg-base bg-op-70! backdrop-blur-md p-2 rounded-lg color-base text-base">
+              <LayoutToggle />
               {enableLogin && (loggedIn
                 ? (
                     <li onClick={logout}>
