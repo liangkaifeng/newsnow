@@ -1,6 +1,10 @@
 import type { PrimitiveAtom } from "jotai"
 import type { FixedColumnID, PrimitiveMetadata, SourceID } from "@shared/types"
 import { defaultLayoutId, layoutPresets } from "@shared/layouts"
+import { sources } from "@shared/sources"
+import { fixedColumnIds, metadata } from "@shared/metadata"
+import { typeSafeObjectEntries, typeSafeObjectFromEntries } from "@shared/type.util"
+import { verifyPrimitiveMetadata } from "@shared/verify"
 import type { Update } from "./types"
 
 function createPrimitiveMetadataAtom(
@@ -36,9 +40,10 @@ function createPrimitiveMetadataAtom(
 const initialMetadata = typeSafeObjectFromEntries(typeSafeObjectEntries(metadata)
   .filter(([id]) => fixedColumnIds.includes(id as any))
   .map(([id, val]) => {
-    // 对于 focus 列，应用默认布局预设
+    // 对于 focus 列，应用默认布局预设，并过滤掉不存在的源
     if (id === "focus") {
-      return [id, layoutPresets[defaultLayoutId].sources] as [FixedColumnID, SourceID[]]
+      const presetSources = layoutPresets[defaultLayoutId].sources.filter(sourceId => sources[sourceId])
+      return [id, presetSources] as [FixedColumnID, SourceID[]]
     }
     return [id, val.sources] as [FixedColumnID, SourceID[]]
   }))
