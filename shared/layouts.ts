@@ -47,7 +47,7 @@ export const layoutPresets: Record<string, LayoutPreset> = {
       "v2ex-share",
       "bestblogs",
       "github-trending-today",
-      "producthunt-today",
+      "producthunt",
       "hackernews",
       "ithome",
       // 综合资讯
