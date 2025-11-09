@@ -39,8 +39,8 @@ export const layoutPresets: Record<string, LayoutPreset> = {
   },
   tech: {
     id: "tech",
-    name: "技术优先",
-    description: "以科技、开发者为主，财经为辅",
+    name: "综合布局",
+    description: "科技、资讯、开发者内容均衡展示",
     sources: [
       // 科技开发者
       "sspai",
