@@ -1,5 +1,6 @@
 import { motion } from "framer-motion"
 import { type LayoutPresetID, layoutPresets } from "@shared/layouts"
+import { sources } from "@shared/sources"
 import { focusSourcesAtom } from "~/atoms"
 
 // function ThemeToggle() {
@@ -20,7 +21,8 @@ function LayoutToggle() {
 
   const applyLayout = (layoutId: LayoutPresetID) => {
     const layout = layoutPresets[layoutId]
-    setFocusSources(layout.sources)
+    const validSources = layout.sources.filter(sourceId => sources[sourceId])
+    setFocusSources(validSources)
     setShowSubmenu(false)
   }
 
