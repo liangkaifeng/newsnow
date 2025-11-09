@@ -356,4 +356,46 @@ export class FeatureRequestTable {
 
     logger.success("Cleaned up expired magic tokens")
   }
+
+  /**
+   * 检查创建需求的速率限制（3个/天）
+   */
+  async checkRequestRateLimit(userId: number): Promise<{ allowed: boolean, count: number, limit: number }> {
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000
+
+    const result = (await this.db.prepare(`
+      SELECT COUNT(*) as count FROM requests
+      WHERE user_id = ? AND created_at > ?
+    `).get(userId, oneDayAgo)) as { count: number }
+
+    const count = result?.count || 0
+    const limit = 3
+
+    return {
+      allowed: count < limit,
+      count,
+      limit,
+    }
+  }
+
+  /**
+   * 检查投票的速率限制（20个/天）
+   */
+  async checkVoteRateLimit(userId: number): Promise<{ allowed: boolean, count: number, limit: number }> {
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000
+
+    const result = (await this.db.prepare(`
+      SELECT COUNT(*) as count FROM votes
+      WHERE user_id = ? AND created_at > ?
+    `).get(userId, oneDayAgo)) as { count: number }
+
+    const count = result?.count || 0
+    const limit = 20
+
+    return {
+      allowed: count < limit,
+      count,
+      limit,
+    }
+  }
 }
