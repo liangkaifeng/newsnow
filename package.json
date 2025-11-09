@@ -1,5 +1,5 @@
 {
-  "name": "newsnow",
+  "name": "capitalflow",
   "type": "module",
   "version": "0.0.36",
   "private": true,
@@ -9,7 +9,7 @@
     "email": "liangkaifeng@example.com",
     "name": "liangkaifeng"
   },
-  "homepage": "https://news.liangkaifeng.com",
+  "homepage": "https://flow.liangkaifeng.com",
   "scripts": {
     "dev": "npm run presource && vite dev",
     "build": "npm run presource && vite build",

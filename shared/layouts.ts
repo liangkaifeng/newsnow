@@ -15,8 +15,8 @@ export interface LayoutPreset {
 export const layoutPresets: Record<string, LayoutPreset> = {
   finance: {
     id: "finance",
-    name: "财经优先",
-    description: "A股为主，香港科技为辅，加密货币、期货",
+    name: "资本流向",
+    description: "追踪 A股、加密货币、期货市场的资本流动",
     sources: [
       // A股财经 - 优先级最高
       "cls-telegraph", // 财联社电报
