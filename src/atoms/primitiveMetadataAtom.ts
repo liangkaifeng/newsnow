@@ -1,5 +1,10 @@
 import type { PrimitiveAtom } from "jotai"
 import type { FixedColumnID, PrimitiveMetadata, SourceID } from "@shared/types"
+import { defaultLayoutId, layoutPresets } from "@shared/layouts"
+import { sources } from "@shared/sources"
+import { fixedColumnIds, metadata } from "@shared/metadata"
+import { typeSafeObjectEntries, typeSafeObjectFromEntries } from "@shared/type.util"
+import { verifyPrimitiveMetadata } from "@shared/verify"
 import type { Update } from "./types"
 
 function createPrimitiveMetadataAtom(
@@ -34,7 +39,14 @@ function createPrimitiveMetadataAtom(
 
 const initialMetadata = typeSafeObjectFromEntries(typeSafeObjectEntries(metadata)
   .filter(([id]) => fixedColumnIds.includes(id as any))
-  .map(([id, val]) => [id, val.sources] as [FixedColumnID, SourceID[]]))
+  .map(([id, val]) => {
+    // 对于 focus 列，应用默认布局预设，并过滤掉不存在的源
+    if (id === "focus") {
+      const presetSources = layoutPresets[defaultLayoutId].sources.filter(sourceId => sources[sourceId])
+      return [id, presetSources] as [FixedColumnID, SourceID[]]
+    }
+    return [id, val.sources] as [FixedColumnID, SourceID[]]
+  }))
 export function preprocessMetadata(target: PrimitiveMetadata) {
   return {
     data: {
@@ -43,8 +55,10 @@ export function preprocessMetadata(target: PrimitiveMetadata) {
         typeSafeObjectEntries(target.data)
           .filter(([id]) => initialMetadata[id])
           .map(([id, s]) => {
-            if (id === "focus") return [id, s.filter(k => sources[k]).map(k => sources[k].redirect ?? k)]
-            const oldS = s.filter(k => initialMetadata[id].includes(k)).map(k => sources[k].redirect ?? k)
+            if (id === "focus") {
+              return [id, s.filter(k => sources[k]).map(k => sources[k]?.redirect ?? k)]
+            }
+            const oldS = s.filter(k => initialMetadata[id].includes(k) && sources[k]).map(k => sources[k]?.redirect ?? k)
             const newS = initialMetadata[id].filter(k => !oldS.includes(k))
             return [id, [...oldS, ...newS]]
           }),

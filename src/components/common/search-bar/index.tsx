@@ -26,8 +26,16 @@ function groupByColumn(items: SourceItemProps[]) {
     column: string
     sources: SourceItemProps[]
   }[]).sort((m, n) => {
-    if (m.column === "科技") return -1
-    if (n.column === "科技") return 1
+    // 财经优先布局：财经 > 加密货币 > 科技 > 其他 > 未分类
+    const priority = ["财经", "加密货币", "科技"]
+    const mPriority = priority.indexOf(m.column)
+    const nPriority = priority.indexOf(n.column)
+
+    if (mPriority !== -1 && nPriority !== -1) {
+      return mPriority - nPriority
+    }
+    if (mPriority !== -1) return -1
+    if (nPriority !== -1) return 1
 
     if (m.column === "未分类") return 1
     if (n.column === "未分类") return -1

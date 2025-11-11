@@ -11,10 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TechImport } from './routes/tech'
 import { Route as IndexImport } from './routes/index'
 import { Route as CColumnImport } from './routes/c.$column'
 
 // Create/Update Routes
+
+const TechRoute = TechImport.update({
+  id: '/tech',
+  path: '/tech',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -39,6 +46,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/tech': {
+      id: '/tech'
+      path: '/tech'
+      fullPath: '/tech'
+      preLoaderRoute: typeof TechImport
+      parentRoute: typeof rootRoute
+    }
     '/c/$column': {
       id: '/c/$column'
       path: '/c/$column'
@@ -53,36 +67,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/tech': typeof TechRoute
   '/c/$column': typeof CColumnRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/tech': typeof TechRoute
   '/c/$column': typeof CColumnRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/tech': typeof TechRoute
   '/c/$column': typeof CColumnRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/c/$column'
+  fullPaths: '/' | '/tech' | '/c/$column'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/c/$column'
-  id: '__root__' | '/' | '/c/$column'
+  to: '/' | '/tech' | '/c/$column'
+  id: '__root__' | '/' | '/tech' | '/c/$column'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TechRoute: typeof TechRoute
   CColumnRoute: typeof CColumnRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TechRoute: TechRoute,
   CColumnRoute: CColumnRoute,
 }
 
@@ -97,11 +116,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/tech",
         "/c/$column"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/tech": {
+      "filePath": "tech.tsx"
     },
     "/c/$column": {
       "filePath": "c.$column.tsx"
